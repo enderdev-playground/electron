@@ -1,5 +1,5 @@
-// All of the Node.js APIs are available in the preload process.
-// It has the same sandbox as a Chrome extension.
+const electron = require("electron")
+
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {
     const element = document.getElementById(selector)
@@ -10,3 +10,16 @@ window.addEventListener('DOMContentLoaded', () => {
     replaceText(`${type}-version`, process.versions[type])
   }
 })
+
+window.openOverlay = () => {
+  console.log("hi")
+  electron.ipcRenderer.send('open-overlay');
+}
+
+window.addEventListener('click', () => {
+  document.body.style.backgroundColor = "#2196f68c"
+
+  setTimeout(() => {
+    document.body.style.backgroundColor = ""
+  }, 100)
+});

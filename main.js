@@ -1,22 +1,55 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
+
+let overlay;
+let main;
+
+const createOverlay = () => {
+  overlay = new BrowserWindow({
+    width: 1200,
+    height: 900,
+    show: false,
+    parent: main,
+    frame: false,
+    transparent: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'overlay-preload.js')
+    }
+  })
+
+  overlay.loadFile('overlay.html')
+}
 
 function createWindow () {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+  main = new BrowserWindow({
+    width: 1200,
+    height: 900,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  main.loadFile('index.html')
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  main.setBackgroundColor("#fff")
+
+  createOverlay()
+
+  ipcMain.on('open-overlay', () => {
+    overlay.show()
+    overlay.setIgnoreMouseEvents(true, { forward: true })
+  })
+
+  ipcMain.on('ignore-mouse', () => {
+    overlay.setIgnoreMouseEvents(true, { forward: true })
+  })
+
+  ipcMain.on('allow-mouse', () => {
+    overlay.setIgnoreMouseEvents(false, { forward: true })
+  })
 }
 
 // This method will be called when Electron has finished
