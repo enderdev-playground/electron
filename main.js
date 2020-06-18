@@ -43,6 +43,11 @@ function createWindow () {
     overlay.setIgnoreMouseEvents(true, { forward: true })
   })
 
+  ipcMain.on('close-overlay', () => {
+    overlay.hide()
+    overlay.setIgnoreMouseEvents(false, { forward: true })
+  })
+
   ipcMain.on('ignore-mouse', () => {
     overlay.setIgnoreMouseEvents(true, { forward: true })
   })

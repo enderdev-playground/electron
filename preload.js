@@ -16,6 +16,11 @@ window.openOverlay = () => {
   electron.ipcRenderer.send('open-overlay');
 }
 
+window.closeOverlay = () => {
+  console.log("hi")
+  electron.ipcRenderer.send('close-overlay');
+}
+
 window.addEventListener('click', () => {
   document.body.style.backgroundColor = "#2196f68c"
 
