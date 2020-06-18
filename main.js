@@ -7,8 +7,8 @@ let main;
 
 const createOverlay = () => {
   overlay = new BrowserWindow({
-    width: 1200,
-    height: 900,
+    width: 1200 - 16, // Because the title bar is included in the size of the window, we need to make our window a bit smaller
+    height: 900 - 40, //
     show: false,
     parent: main,
     frame: false,
@@ -37,15 +37,21 @@ function createWindow () {
   main.setBackgroundColor("#fff")
 
   createOverlay()
-
-  ipcMain.on('open-overlay', () => {
-    overlay.show()
-    overlay.setIgnoreMouseEvents(true, { forward: true })
+  main.on('move', () => {
+    let position = main.getPosition()
+    overlay.setPosition(position[0] + 8, position[1] + 32)
   })
 
-  ipcMain.on('close-overlay', () => {
+  ipcMain.on('open-overlay', async () => {
+    overlay.show()
+    overlay.setIgnoreMouseEvents(true, { forward: true })
+    console.log(await main.webContents.executeJavaScript("let dMC = document.createElement('style'); dMC.id = 'dotBrowserDMC'; dMC.innerText='*{cursor:default}'; document.body.appendChild(dMC); true"))
+  })
+
+  ipcMain.on('close-overlay', async () => {
     overlay.hide()
     overlay.setIgnoreMouseEvents(false, { forward: true })
+    console.log(await main.webContents.executeJavaScript("document.getElementById('dotBrowserDMC').remove(); true"))
   })
 
   ipcMain.on('ignore-mouse', () => {
