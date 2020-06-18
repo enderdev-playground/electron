@@ -1,12 +1,15 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, BrowserView} = require('electron')
 const path = require('path')
+
+let overlay;
 
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -16,7 +19,34 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
+
+  overlay = new BrowserWindow({
+    width: 800,
+    height: 600,
+    transparent: true,
+    frame: false,
+    modal: true,
+    parent: mainWindow,
+    backgroundThrottling: false
+  })
+
+  overlay.setIgnoreMouseEvents(true);
+
+  view = new BrowserView({
+    width: 400,
+    height: 300,
+    x: 0,
+    y: 0
+  })
+
+  view.webContents.openDevTools()
+  view.setAutoResize({ width: true, height: true })
+  view.setBounds({ width: 400, height: 300, x: 0,y: 0 })
+
+  view.webContents.loadFile("./view.html")
+
+  overlay.addBrowserView(view)
 }
 
 // This method will be called when Electron has finished
